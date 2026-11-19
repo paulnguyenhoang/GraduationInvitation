@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="108" viewBox="0 0 168 108" fill="none">
+  <defs>
+    <pattern id="grid" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M0 12V0H12" stroke="#587c91" stroke-width=".65"/>
+    </pattern>
+    <radialGradient id="fade" cx="1" cy="1" r="1">
+      <stop offset=".16" stop-color="white"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="edge"><path d="M0 0h168v108H0z" fill="url(#fade)"/></mask>
+  </defs>
+  <g mask="url(#edge)">
+    <path d="M0 0h168v108H0z" fill="url(#grid)"/>
+    <path d="M52 83h82V24m-46 59V45h46M135 65h17m-8-4v8M106 92v13m-4-7h8" stroke="#587c91" stroke-width=".85"/>
+    <path d="M84 79h8v8h-8zM130 41h8v8h-8z" fill="#f8f5e9" stroke="#587c91" stroke-width=".85"/>
+  </g>
+</svg>

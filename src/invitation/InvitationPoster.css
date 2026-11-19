@@ -1,0 +1,351 @@
+.poster-screen {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  min-height: 100svh;
+  padding-block: max(clamp(0.6rem, 2.5vw, 1.75rem), env(safe-area-inset-top)) max(2.6rem, env(safe-area-inset-bottom));
+  padding-inline: max(14px, env(safe-area-inset-left)) max(14px, env(safe-area-inset-right));
+  animation: poster-appear 320ms ease both;
+}
+
+@keyframes poster-appear {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.poster-frame { position: relative; width: min(46.5rem, 100%); }
+.poster-tools { position: relative; z-index: 3; display: flex; justify-content: space-between; margin: 0 0 0.45rem; padding-inline: 0.25rem; }
+
+.poster-paper {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--paper-grain), var(--paper);
+  border: 1px solid #9db2b8;
+  box-shadow: 1px 3px 0 #d1dbd7, 0 16px 40px #2e506b29, 0 2px 5px #2e506b18;
+}
+
+.paper-border {
+  position: absolute;
+  z-index: 1;
+  inset: 10px;
+  border: 1px solid #91a7aeac;
+  pointer-events: none;
+}
+
+.paper-border::before { position: absolute; inset: 5px; border: 1px solid var(--rule); content: ''; }
+.paper-border i {
+  position: absolute;
+  width: clamp(1.65rem, 5.8vw, 3.4rem);
+  aspect-ratio: 1;
+  background: url('../assets/letterpress-corner.svg') center / contain no-repeat;
+  opacity: 0.82;
+}
+.paper-border i:nth-child(1) { top: 9px; left: 9px; }
+.paper-border i:nth-child(2) { top: 9px; right: 9px; transform: scaleX(-1); }
+.paper-border i:nth-child(3) { bottom: 9px; left: 9px; transform: scaleY(-1); }
+.paper-border i:nth-child(4) { bottom: 9px; right: 9px; transform: scale(-1); }
+
+.paper-grid {
+  position: absolute;
+  right: 11px;
+  bottom: 11px;
+  width: clamp(5.8rem, 25%, 10.5rem);
+  aspect-ratio: 168 / 108;
+  background: url('../assets/technical-grid.svg') center / contain no-repeat;
+  opacity: 0.34;
+  pointer-events: none;
+}
+
+.poster-page {
+  position: relative;
+  min-width: 0;
+  padding: clamp(1.65rem, 5vw, 2.65rem) clamp(1.1rem, 6vw, 4.25rem) clamp(1.7rem, 4vw, 2.5rem);
+  color: var(--ink);
+  text-align: center;
+  animation: paper-slide 360ms cubic-bezier(.24,.7,.35,1) both;
+}
+.invitation-page { --slide-from: -14px; }
+.parking-page { --slide-from: 14px; }
+
+@keyframes paper-slide {
+  from { opacity: 0; transform: translateX(var(--slide-from)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.letter-header { display: grid; justify-items: center; }
+.school-logo { width: clamp(2.25rem, 8vw, 3rem); height: auto; aspect-ratio: 1; object-fit: contain; }
+.school-name { margin: 0.65rem 0 0; font-size: clamp(0.7rem, 2.3vw, 0.8rem); line-height: 1.6; text-wrap: balance; }
+.poster-title {
+  margin: 0.65rem 0 0;
+  color: var(--ink);
+  font: 400 clamp(1.55rem, 5.8vw, 2.85rem)/1.12 Lora, Georgia, serif;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.poster-title:focus { outline: 0; }
+.letter-flourish {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: min(48%, 8rem);
+  margin-top: 0.85rem;
+}
+.letter-flourish::before, .letter-flourish::after { height: 1px; flex: 1; background: var(--sand); content: ''; }
+.letter-flourish span { width: 6px; height: 6px; transform: rotate(45deg); border: 1px solid var(--accent); }
+
+.letter-identity {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  gap: 0.9rem;
+  margin: clamp(1.32rem, 3vw, 1.7rem) auto 0;
+}
+
+.paper-portrait {
+  position: relative;
+  width: clamp(6rem, 24vw, 9.75rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #d8dfd8;
+  box-shadow: 0 0 0 3px var(--paper), 0 0 0 4px var(--sand), 0 0 0 8px var(--paper), 0 0 0 9px var(--rule);
+  overflow: hidden;
+}
+.paper-portrait img { position: absolute; display: block; height: auto; max-width: none; }
+
+.graduate-details { position: relative; isolation: isolate; min-width: 0; }
+.identity-monogram {
+  position: absolute;
+  z-index: -1;
+  top: -0.85em;
+  right: -0.42em;
+  color: #edf0e5;
+  text-shadow: -0.7px -0.7px #a8b9b5, 1px 1px #fffdf1;
+  font: 400 clamp(2.5rem, 8vw, 3.65rem)/1 Lora, Georgia, serif;
+  pointer-events: none;
+}
+.graduate-name {
+  margin: 0;
+  font: 400 clamp(1.65rem, 6.9vw, 2.6rem)/1.14 Lora, Georgia, serif;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.faculty-name { margin: 0.45rem 0 0; font-size: clamp(0.88rem, 2.65vw, 1rem); line-height: 1.55; text-wrap: pretty; }
+
+.personal-invitation {
+  max-width: 32rem;
+  margin: 1.25rem auto 0;
+  padding: 0.85rem 0;
+  border-block: 1px solid var(--rule);
+  font: 400 clamp(1.04rem, 3.1vw, 1.45rem)/1.53 Lora, Georgia, serif;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.invitation-greeting { display: block; }
+.invitation-recipient { color: var(--wax); font-weight: 600; }
+
+.ceremony-details { display: grid; gap: 0.7rem; margin: 1rem auto 0; line-height: 1.55; }
+.ceremony-block h2 {
+  margin: 0 0 0.22rem;
+  color: var(--dark-accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ceremony-block p { margin: 0; font-size: 0.875rem; text-wrap: pretty; }
+.ceremony-block .ceremony-primary { font-weight: 600; font-size: 1rem; }
+.ceremony-block .ceremony-time { margin-top: 0.12rem; font-size: 0.94rem; }
+.ceremony-address { padding: 0.65rem 0 0; border-top: 1px solid var(--rule); font-size: 0.9rem; text-wrap: pretty; }
+.ceremony-address p { margin: 0; }
+.location-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; margin-top: 0.7rem; }
+.location-action, .paper-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.33rem;
+  min-height: 44px;
+  padding: 0.35rem 0.58rem;
+  border: 1px solid #9eb4be;
+  border-radius: 3px;
+  background: #e9efeb;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.location-action svg { flex: 0 0 auto; }
+.location-actions a { background: transparent; }
+.paper-nav { padding-inline: 0.5rem; border-color: transparent; background: transparent; }
+.paper-nav span { font-size: 1rem; }
+.parking-next { margin-top: 0.16rem; }
+.parking-back { display: flex; width: max-content; margin: -0.45rem auto 0.4rem 0; }
+@media (hover: hover) {
+  .location-action:hover, .paper-nav:hover { background: #dbe7e8; }
+}
+
+.text-link { color: inherit; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+
+.letter-footer { display: flex; align-items: center; justify-content: center; gap: 0.62rem; padding-top: 0.12rem; border-top: 1px solid var(--rule); color: var(--dark-accent); }
+.footer-monogram { display: grid; place-items: center; width: 1.65rem; height: 1.65rem; border: 1px solid #9aafb4b5; border-radius: 50%; font: 400 0.85rem/1 Lora, serif; }
+.letter-footer p { margin: 0; font-size: 0.88rem; }
+.letter-footer a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+
+.round-control {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--dark-accent);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.round-control::before {
+  position: absolute;
+  z-index: -1;
+  inset: 5px;
+  border: 1px solid #9aafb4;
+  border-radius: inherit;
+  background: #f6f4e9;
+  content: '';
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+.round-control:active::before { transform: scale(0.92); }
+.round-control:disabled { opacity: 0.55; cursor: default; }
+.round-control:focus-visible { outline-offset: -1px; }
+@media (hover: hover) { .round-control:hover:enabled::before { background: #e1e9e8; } }
+
+.download-control { position: relative; width: 44px; height: 44px; }
+.download-icon { color: #f8f5e9; }
+.download-icon::before { border-color: var(--ink); background: var(--ink); }
+@media (hover: hover) { .download-icon:hover:enabled::before { background: #355b70; } }
+.poster-download { width: max-content; }
+.poster-download .download-icon {
+  display: inline-flex;
+  gap: 0.42rem;
+  width: auto;
+  padding: 0 0.88rem;
+  border-radius: 4px;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+.poster-download .download-icon::before { inset: 4px 0; }
+.poster-download .download-icon svg { width: 17px; height: 17px; }
+.download-feedback:not(:empty) {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 2px);
+  left: 0;
+  width: max-content;
+  max-width: min(11.5rem, calc(100vw - 5rem));
+  padding: 0.45rem 0.58rem;
+  border: 1px solid var(--sand);
+  border-radius: 3px;
+  background: #f8f5e9;
+  color: var(--ink);
+  font-size: 0.73rem;
+  line-height: 1.4;
+  box-shadow: 0 2px 6px #33556c29;
+}
+.download-feedback a { display: flex; align-items: center; min-height: 32px; color: var(--dark-accent); text-underline-offset: 0.2em; }
+.poster-download .download-feedback:not(:empty) {
+  top: 50%;
+  left: calc(100% + 0.3rem);
+  max-width: min(11.5rem, calc(100vw - 11.5rem));
+  transform: translateY(-50%);
+}
+
+.parking-header { padding-bottom: clamp(1rem, 3vw, 1.6rem); }
+.parking-header .poster-title { font-size: clamp(1.55rem, 5.8vw, 2.65rem); }
+.parking-emblem { display: grid; place-items: center; width: 39px; height: 39px; border: 1px solid var(--sand); border-radius: 50%; color: var(--dark-accent); }
+.parking-list { margin: 0; padding: 0; list-style: none; text-align: left; }
+.parking-list li {
+  padding-block: clamp(0.85rem, 3vw, 1.25rem);
+  border-top: 1px solid var(--rule);
+}
+.parking-list li:last-child { border-bottom: 1px solid var(--rule); }
+.parking-entry h2 { margin: 0; font: 400 clamp(1.18rem, 4vw, 1.45rem)/1.35 Lora, Georgia, serif; text-wrap: pretty; }
+.parking-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0.3rem 0 0; color: var(--ink); font-size: 0.82rem; font-weight: 600; }
+.parking-backup { padding: 0.13rem 0.42rem; border: 1px solid #a2b6bf; border-radius: 3px; background: #e7efeb; }
+.parking-address { margin: 0.36rem 0 0; font-size: 0.9rem; line-height: 1.5; text-wrap: pretty; }
+.parking-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.3rem 0.7rem; margin: 0.58rem 0 0; }
+.parking-facts dt { color: var(--dark-accent); font-size: 0.78rem; line-height: 1.35; }
+.parking-facts dd { margin: 0.16rem 0 0; font-size: 0.9rem; font-weight: 600; line-height: 1.35; }
+.parking-map { display: inline-flex; align-items: center; gap: 0.28rem; min-height: 44px; margin-top: 0.55rem; color: var(--dark-accent); font-size: 0.86rem; font-weight: 600; }
+.parking-disclaimer { margin: 0.95rem auto 0; max-width: 30rem; color: var(--dark-accent); font: 400 clamp(0.75rem, 2.4vw, 0.85rem)/1.5 Lora, Georgia, serif; text-wrap: balance; }
+
+body:has(.poster-dialog[open]) { overflow: hidden; }
+.poster-dialog {
+  max-width: none;
+  width: min(68rem, calc(100% - 1rem));
+  max-height: calc(100dvh - 1.25rem);
+  padding: 0;
+  border: 1px solid #9db2b8;
+  border-radius: 4px;
+  background: var(--paper-grain), var(--paper);
+  color: var(--ink);
+  box-shadow: 0 14px 44px #233b5440;
+  overscroll-behavior: contain;
+}
+.poster-dialog::backdrop { background: #21374666; }
+.dialog-content { padding: clamp(0.45rem, 2.2vw, 1.15rem); }
+.dialog-header { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 0.3rem; text-align: center; }
+.dialog-header h2 { margin: 0.1rem 0; font: 400 clamp(1rem, 3.6vw, 1.55rem)/1.2 Lora, Georgia, serif; text-wrap: balance; }
+.map-viewport {
+  max-height: min(64dvh, 35rem);
+  margin-top: 0.45rem;
+  overflow: auto;
+  border: 1px solid var(--rule);
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y pinch-zoom;
+  background: #fff;
+}
+.map-viewport[data-zoomed='true'] { cursor: grab; }
+.map-viewport[data-panning='true'] { cursor: grabbing; }
+.map-sheet { position: relative; }
+.campus-map { display: block; width: 100%; height: auto; }
+.a5-marker { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.map-controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.35rem 0.65rem; margin-top: 0.45rem; }
+.map-zoom, .map-jumps { display: flex; align-items: center; gap: 0.4rem; }
+.map-controls output { min-width: 3rem; text-align: center; font-size: 0.81rem; }
+.map-focus { background: #dfeae8; }
+
+@media (min-width: 680px) {
+  .poster-tools { margin-bottom: 0.55rem; }
+  .letter-identity { width: max-content; max-width: 100%; grid-template-columns: auto minmax(0, 1fr); gap: 1.8rem; text-align: left; }
+  .graduate-name { text-wrap: auto; }
+  .ceremony-details { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem 0; }
+  .ceremony-block { padding-inline: clamp(0.65rem, 2.4vw, 1.3rem); }
+  .ceremony-block + .ceremony-block { border-left: 1px solid var(--rule); }
+  .ceremony-address { grid-column: 1 / -1; }
+  .parking-list { max-width: 35rem; margin-inline: auto; }
+  .parking-entry { position: relative; padding-right: 6rem; }
+  .parking-map { position: absolute; top: -0.6rem; right: 0; margin: 0; }
+}
+
+@media (max-width: 440px) {
+  .paper-border { inset: 6px; }
+  .paper-border::before { inset: 3px; }
+  .paper-border i:nth-child(1) { top: 6px; left: 6px; }
+  .paper-border i:nth-child(2) { top: 6px; right: 6px; }
+  .paper-border i:nth-child(3) { bottom: 6px; left: 6px; }
+  .paper-border i:nth-child(4) { bottom: 6px; right: 6px; }
+  .map-controls { justify-content: center; }
+}
+
+@media (max-width: 355px) {
+  .location-actions { display: grid; justify-content: stretch; width: min(12rem, 100%); margin-inline: auto; gap: 0.55rem; }
+  .identity-monogram { right: 0; top: -0.73em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster-screen, .poster-page { animation: none; }
+  .round-control::before { transition: none; }
+}
