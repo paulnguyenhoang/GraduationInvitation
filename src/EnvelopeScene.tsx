@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react'
+import { Suspense, useEffect, useEffectEvent, useMemo, useRef } from 'react'
 import type { RefObject } from 'react'
 import { OrthographicCamera, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
@@ -19,6 +19,7 @@ export type EnvelopePhase = 'loading' | 'closed' | 'opening' | 'open'
 type Props = {
   actionRef: RefObject<(() => void) | null>
   sealButtonRef: RefObject<HTMLButtonElement | null>
+  onOpenRequest: () => void
   onPhaseChange: (phase: EnvelopePhase) => void
   onSceneError: () => void
 }
@@ -80,7 +81,7 @@ function flapLining(source: BufferGeometry) {
   return { mesh, dispose: () => { geometry.dispose(); material.dispose(); map.dispose() } }
 }
 
-function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }: Props) {
+function EnvelopeScene({ actionRef, sealButtonRef, onOpenRequest, onPhaseChange, onSceneError }: Props) {
   const { scene } = useGLTF(modelUrl, false, false)
   const model = useMemo(() => {
     const model = scene.clone(true)
@@ -110,6 +111,7 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
   const sealWeight = useRef(1)
   const sealOrigin = useMemo(() => new Vector3(), [])
   const sealScale = useMemo(() => seal.scale.clone(), [seal])
+  const requestOpen = useEffectEvent(onOpenRequest)
 
   useFrame(({ camera, size }, delta) => {
     const lens = cameraRef.current
@@ -167,6 +169,7 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
     const lining = flapLining(flap.geometry)
     if (lining) flap.add(lining.mesh)
     let gesture: Gesture | null = null
+    let pendingEnvelopeClick = false
     let timeline: gsap.core.Timeline | undefined
 
     function updateMotion() {
@@ -222,6 +225,7 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
 
     function onPointerDown(event: PointerEvent) {
       if (phase.current !== 'closed' || gesture || event.button !== 0 || !event.isPrimary) return
+      pendingEnvelopeClick = false
       const hit = envelopePartAt(event)
       gesture = {
         id: event.pointerId, x: event.clientX, y: event.clientY,
@@ -270,9 +274,17 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
       }
       const hit = envelopePartAt(event)
       sealActive.current = event.pointerType === 'mouse' && !moved && hit === seal
-      if (!moved && finished.startedOnEnvelope && hit) openEnvelope()
-      else canvas.style.cursor = hit ? 'pointer' : 'grab'
+      pendingEnvelopeClick = !moved && finished.startedOnEnvelope && Boolean(hit)
+      canvas.style.cursor = hit ? 'pointer' : 'grab'
       invalidate()
+    }
+
+    function onCanvasClick(event: MouseEvent) {
+      if (!pendingEnvelopeClick) return
+      pendingEnvelopeClick = false
+      // Open the prompt after touch-generated mouse events finish moving focus.
+      event.preventDefault()
+      requestOpen()
     }
 
     function cancelPointer(event: PointerEvent) {
@@ -301,6 +313,7 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
     canvas.addEventListener('pointerdown', onPointerDown)
     canvas.addEventListener('pointermove', onPointerMove)
     canvas.addEventListener('pointerup', onPointerUp)
+    canvas.addEventListener('click', onCanvasClick)
     canvas.addEventListener('pointercancel', cancelPointer)
     canvas.addEventListener('lostpointercapture', cancelPointer)
     canvas.addEventListener('pointerleave', leaveSeal)
@@ -318,6 +331,7 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
       canvas.removeEventListener('pointerdown', onPointerDown)
       canvas.removeEventListener('pointermove', onPointerMove)
       canvas.removeEventListener('pointerup', onPointerUp)
+      canvas.removeEventListener('click', onCanvasClick)
       canvas.removeEventListener('pointercancel', cancelPointer)
       canvas.removeEventListener('lostpointercapture', cancelPointer)
       canvas.removeEventListener('pointerleave', leaveSeal)

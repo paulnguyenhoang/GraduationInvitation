@@ -42,6 +42,7 @@ export function recipientName(recipient: string) {
   return recipient.normalize('NFC').trim().replace(/\s+/gu, ' ')
 }
 
+export const invitationNamePrompt = 'Mời bạn ghi tên mình vào thiệp'
 export const invitationGreetingLead = 'Mời '
 export const invitationGreetingTail = ' đến chung vui'
 export const invitationEnding = 'trong ngày tốt nghiệp của mình nha.'

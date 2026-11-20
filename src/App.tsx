@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useLayoutEffect, useState } from 'react'
+import { lazy, Suspense, useLayoutEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { EnvelopeScreen } from './EnvelopeScreen'
 import { DeskStamps } from './DeskStamps'
@@ -29,10 +29,9 @@ function storedRecipient() {
 
 function App() {
   const [recipient, setRecipient] = useState(storedRecipient)
-  const [poster, setPoster] = useState<{ draft: string | null } | null>(null)
+  const [posterRecipient, setPosterRecipient] = useState<string | null>(null)
   const [restoreOpenFocus, setRestoreOpenFocus] = useState(false)
-  const posterOpen = poster !== null
-  const openPoster = useCallback((draft: string | null) => setPoster({ draft }), [])
+  const posterOpen = posterRecipient !== null
 
   useLayoutEffect(() => { window.scrollTo(0, 0) }, [posterOpen])
 
@@ -63,12 +62,12 @@ function App() {
           ))}
         </div>
       </div>
-      {poster ? (
+      {posterOpen ? (
         <Suspense fallback={<div className="poster-loading" role="status">Đang mở thiệp…</div>}>
-          <InvitationPoster recipient={poster.draft ?? recipient} onClose={() => { setRestoreOpenFocus(true); setPoster(null) }} />
+          <InvitationPoster recipient={posterRecipient} onClose={() => { setRestoreOpenFocus(true); setPosterRecipient(null) }} />
         </Suspense>
       ) : (
-        <EnvelopeScreen recipient={recipient} onRecipientChange={updateRecipient} onOpen={openPoster} restoreOpenFocus={restoreOpenFocus} />
+        <EnvelopeScreen recipient={recipient} onRecipientChange={updateRecipient} onOpen={setPosterRecipient} restoreOpenFocus={restoreOpenFocus} />
       )}
     </div>
   )

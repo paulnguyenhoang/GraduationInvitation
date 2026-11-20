@@ -2,7 +2,8 @@ import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, use
 import type { ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import type { EnvelopePhase } from './EnvelopeScene'
-import { invitation, recipientName } from './invitation/content'
+import { RecipientNameDialog } from './RecipientNameDialog'
+import { invitation, invitationNamePrompt, recipientName } from './invitation/content'
 
 const EnvelopeViewport = lazy(() => import('./EnvelopeScene'))
 
@@ -25,12 +26,12 @@ class SceneBoundary extends Component<{
   }
 }
 
-function RecipientNameInput({ value, onSave, onDraftChange }: {
+function RecipientNameInput({ value, draft, onSave, onDraftChange }: {
   value: string
+  draft: string | null
   onSave: (value: string) => void
   onDraftChange: (draft: string | null) => void
 }) {
-  const [draft, setDraft] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const editRef = useRef<HTMLButtonElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -68,20 +69,15 @@ function RecipientNameInput({ value, onSave, onDraftChange }: {
     }
   }, [editing])
 
-  function updateDraft(next: string | null) {
-    setDraft(next)
-    onDraftChange(next)
-  }
-
   function beginEditing() {
     // Focus within the tap so mobile browsers can show their keyboard.
-    flushSync(() => updateDraft(value))
+    flushSync(() => onDraftChange(value))
     inputRef.current?.focus()
   }
 
   function finishEditing(save: boolean) {
     if (save && draft !== null) onSave(recipientName(draft))
-    flushSync(() => updateDraft(null))
+    flushSync(() => onDraftChange(null))
     editRef.current?.focus({ preventScroll: true })
   }
 
@@ -97,7 +93,7 @@ function RecipientNameInput({ value, onSave, onDraftChange }: {
         <label className="sr-only" htmlFor="recipient-name">Tên người nhận</label>
         <input id="recipient-name" ref={inputRef} type="text" autoComplete="off"
           enterKeyHint="done" placeholder="Tên người nhận" value={draft}
-          onChange={(event) => updateDraft(event.target.value)} />
+          onChange={(event) => onDraftChange(event.target.value)} />
         <button type="submit" className="recipient-done">Xong</button>
       </form>
     )
@@ -106,7 +102,7 @@ function RecipientNameInput({ value, onSave, onDraftChange }: {
   return (
     <button ref={editRef} type="button" className="edit-name" onClick={beginEditing}
       aria-label={name ? `Gửi đến ${name}. Chỉnh sửa tên người nhận` : undefined}>
-      <span>{name ? <>Gửi đến <strong>{name}</strong></> : 'Thêm tên người nhận'}</span>
+      <span>{name ? <>Gửi đến <strong>{name}</strong></> : invitationNamePrompt}</span>
       <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="m14.5 5.5 4 4M4 20l4.5-1 11-11a2.8 2.8 0 0 0-4-4l-11 11L4 20Z" />
       </svg>
@@ -117,27 +113,30 @@ function RecipientNameInput({ value, onSave, onDraftChange }: {
 type Props = {
   recipient: string
   onRecipientChange: (recipient: string) => void
-  onOpen: (draft: string | null) => void
+  onOpen: (name: string) => void
   restoreOpenFocus: boolean
 }
 
 export function EnvelopeScreen({ recipient, onRecipientChange, onOpen, restoreOpenFocus }: Props) {
   const [phase, setPhase] = useState<EnvelopePhase>('loading')
   const [failed, setFailed] = useState(false)
+  const [showNameDialog, setShowNameDialog] = useState(false)
+  const [nameDraft, setNameDraft] = useState<string | null>(null)
   const actionRef = useRef<(() => void) | null>(null)
   const sealButtonRef = useRef<HTMLButtonElement>(null)
-  const draftRef = useRef<string | null>(null)
-  const openingRef = useRef(false)
+  const openingNameRef = useRef<string | null>(null)
   const opening = !failed && (phase === 'opening' || phase === 'open')
   const ready = !failed && phase === 'closed'
-  const showPoster = useCallback(() => onOpen(draftRef.current), [onOpen])
+  const showPoster = useCallback(() => {
+    const name = openingNameRef.current
+    if (name) onOpen(name)
+  }, [onOpen])
   const reportSceneError = useCallback(() => {
-    if (openingRef.current) showPoster()
+    if (openingNameRef.current) showPoster()
     else setFailed(true)
   }, [showPoster])
 
   const handlePhase = useCallback((next: EnvelopePhase) => {
-    if (next === 'opening') openingRef.current = true
     setPhase(next)
     if (next === 'open') showPoster()
   }, [showPoster])
@@ -146,13 +145,33 @@ export function EnvelopeScreen({ recipient, onRecipientChange, onOpen, restoreOp
     if (restoreOpenFocus) sealButtonRef.current?.focus({ preventScroll: true })
   }, [restoreOpenFocus])
 
-  function open() {
-    if (openingRef.current) return
+  function openFor(name: string) {
+    if (openingNameRef.current) return
+    openingNameRef.current = name
+    if (name !== recipient) onRecipientChange(name)
     if (!failed && actionRef.current) actionRef.current()
-    else {
-      openingRef.current = true
-      showPoster()
+    else showPoster()
+  }
+
+  function requestOpen() {
+    if (openingNameRef.current || showNameDialog) return
+    const name = recipientName(nameDraft ?? recipient)
+    if (!name) {
+      flushSync(() => setShowNameDialog(true))
+      return
     }
+    openFor(name)
+  }
+
+  function closeNameDialog() {
+    flushSync(() => setShowNameDialog(false))
+    sealButtonRef.current?.focus({ preventScroll: true })
+  }
+
+  function saveNameFromDialog(name: string) {
+    onRecipientChange(name)
+    setNameDraft(null)
+    closeNameDialog()
   }
 
   return (
@@ -166,11 +185,12 @@ export function EnvelopeScreen({ recipient, onRecipientChange, onOpen, restoreOp
         {(failed || phase === 'loading') && <div className="envelope-placeholder" aria-hidden="true"><span>V</span></div>}
         {!failed && <SceneBoundary onError={reportSceneError}>
           <Suspense fallback={null}>
-            <EnvelopeViewport actionRef={actionRef} sealButtonRef={sealButtonRef} onPhaseChange={handlePhase} onSceneError={reportSceneError} />
+            <EnvelopeViewport actionRef={actionRef} sealButtonRef={sealButtonRef} onOpenRequest={requestOpen}
+              onPhaseChange={handlePhase} onSceneError={reportSceneError} />
           </Suspense>
         </SceneBoundary>}
         <button ref={sealButtonRef} type="button" className="seal-key" aria-label="Mở thiệp từ phong bì"
-          disabled={opening} onClick={open} />
+          disabled={opening} onClick={requestOpen} />
         <span className="sr-only" role="status">
           {phase === 'loading' && !failed ? 'Đang tải phong bì…' : phase === 'opening' ? 'Đang mở thiệp mời…' : ''}
         </span>
@@ -189,8 +209,9 @@ export function EnvelopeScreen({ recipient, onRecipientChange, onOpen, restoreOp
             </>}
           </span>
         </div>
-        <RecipientNameInput value={recipient} onSave={onRecipientChange} onDraftChange={(draft) => { draftRef.current = draft }} />
+        <RecipientNameInput value={recipient} draft={nameDraft} onSave={onRecipientChange} onDraftChange={setNameDraft} />
       </div>
+      {showNameDialog && <RecipientNameDialog onClose={closeNameDialog} onSave={saveNameFromDialog} />}
     </main>
   )
 }
