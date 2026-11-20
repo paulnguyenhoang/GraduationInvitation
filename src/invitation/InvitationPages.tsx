@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import { invitation, invitationEnding, invitationGreetingLead, parkingPlaces, portraitCrop, recipientName } from './content'
+import { invitation, invitationEnding, invitationGreetingLead, invitationGreetingTail, parkingPlaces, portraitCrop, recipientName } from './content'
 import { Icon } from './Icon'
 
 export function InvitationPage({ recipient, onMapOpen, onParkingOpen, headingRef }: {
@@ -34,9 +34,9 @@ export function InvitationPage({ recipient, onMapOpen, onParkingOpen, headingRef
 
       <p className="personal-invitation">
         <span className="invitation-greeting">
-          {invitationGreetingLead}{guestName ? <strong className="invitation-recipient">{guestName}</strong> : 'bạn'}
+          {invitationGreetingLead}{guestName ? <strong className="invitation-recipient">{guestName}</strong> : 'bạn'}{invitationGreetingTail}
         </span>
-        {invitationEnding}
+        {' '}<span className="invitation-ending">{invitationEnding}</span>
       </p>
 
       <div className="ceremony-details">

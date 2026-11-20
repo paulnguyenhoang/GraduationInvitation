@@ -126,10 +126,10 @@ export function EnvelopeScreen({ recipient, onRecipientChange, onOpen, restoreOp
   const [failed, setFailed] = useState(false)
   const actionRef = useRef<(() => void) | null>(null)
   const sealButtonRef = useRef<HTMLButtonElement>(null)
-  const openButtonRef = useRef<HTMLButtonElement>(null)
   const draftRef = useRef<string | null>(null)
   const openingRef = useRef(false)
   const opening = !failed && (phase === 'opening' || phase === 'open')
+  const ready = !failed && phase === 'closed'
   const showPoster = useCallback(() => onOpen(draftRef.current), [onOpen])
   const reportSceneError = useCallback(() => {
     if (openingRef.current) showPoster()
@@ -143,7 +143,7 @@ export function EnvelopeScreen({ recipient, onRecipientChange, onOpen, restoreOp
   }, [showPoster])
 
   useLayoutEffect(() => {
-    if (restoreOpenFocus) openButtonRef.current?.focus({ preventScroll: true })
+    if (restoreOpenFocus) sealButtonRef.current?.focus({ preventScroll: true })
   }, [restoreOpenFocus])
 
   function open() {
@@ -169,23 +169,25 @@ export function EnvelopeScreen({ recipient, onRecipientChange, onOpen, restoreOp
             <EnvelopeViewport actionRef={actionRef} sealButtonRef={sealButtonRef} onPhaseChange={handlePhase} onSceneError={reportSceneError} />
           </Suspense>
         </SceneBoundary>}
-        <button ref={sealButtonRef} type="button" className="seal-key" aria-label="Mở thư mời bằng dấu sáp V"
-          disabled={failed || phase !== 'closed'} onClick={open} />
+        <button ref={sealButtonRef} type="button" className="seal-key" aria-label="Mở thiệp từ phong bì"
+          disabled={opening} onClick={open} />
         <span className="sr-only" role="status">
           {phase === 'loading' && !failed ? 'Đang tải phong bì…' : phase === 'opening' ? 'Đang mở thư mời…' : ''}
         </span>
       </section>
 
       <div className="invitation-actions">
-        <div className="envelope-instructions" data-ready={!failed && phase === 'closed'}>
-          {!failed && phase === 'closed' && <span className="rotate-hint">
+        <div className="envelope-instructions" data-ready={ready}>
+          {ready && <span className="rotate-hint">
             <span className="mouse-copy">Kéo để xoay</span><span className="touch-copy">Vuốt để xoay</span>
           </span>}
-          <button ref={openButtonRef} type="button" className="open-invitation" onClick={open} aria-disabled={opening}>
-            {!failed && phase === 'closed' ? <>
+          <span className="open-hint">
+            {ready ? <>
               <span className="mouse-copy">Bấm dấu sáp V để mở</span><span className="touch-copy">Chạm dấu sáp V để mở</span>
-            </> : opening ? 'Đang mở thiệp…' : 'Mở thiệp'}
-          </button>
+            </> : opening ? 'Đang mở thiệp…' : <>
+              <span className="mouse-copy">Bấm vào phong bì để mở</span><span className="touch-copy">Chạm vào phong bì để mở</span>
+            </>}
+          </span>
         </div>
         <RecipientNameInput value={recipient} onSave={onRecipientChange} onDraftChange={(draft) => { draftRef.current = draft }} />
       </div>

@@ -45,7 +45,8 @@ export function recipientName(recipient: string) {
 }
 
 export const invitationGreetingLead = 'Mời '
-export const invitationEnding = ' đến chung vui trong ngày tốt nghiệp của mình nhé!'
+export const invitationGreetingTail = ' đến chung vui'
+export const invitationEnding = 'trong ngày tốt nghiệp của mình nha.'
 
 export const parkingPlaces = [
   {

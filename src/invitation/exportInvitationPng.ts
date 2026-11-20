@@ -2,7 +2,7 @@ import cornerUrl from '../assets/letterpress-corner.svg'
 import grainUrl from '../assets/paper-grain.png'
 import gridUrl from '../assets/technical-grid.svg'
 import { canvasPng, loadImage } from './canvasImage'
-import { invitation, invitationEnding, invitationGreetingLead, paperColors, portraitCrop, recipientName } from './content'
+import { invitation, invitationEnding, invitationGreetingLead, invitationGreetingTail, paperColors, portraitCrop, recipientName } from './content'
 
 export const invitationFilename = 'ThiepMoiTotNghiep_NguyenHoangVu.png'
 
@@ -31,13 +31,12 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, width: number) {
 
 export async function exportInvitationPng(recipient: string): Promise<Blob> {
   const guestName = recipientName(recipient)
-  const greeting = invitationGreetingLead + (guestName || 'bạn')
-  const ending = invitationEnding.trim()
+  const greeting = invitationGreetingLead + (guestName || 'bạn') + invitationGreetingTail
   const messageFont = '400 23px Lora'
   const recipientFont = '600 23px Lora'
   const { logo, portrait, school, title, name, faculty, date, time, venue, venueSchool, address, phone } = invitation
   const [, , , , logoImage, portraitImage, grainImage, cornerImage, gridImage] = await Promise.all([
-    document.fonts.load('400 45px Lora', `${title} ${name} ${greeting} ${ending} V`),
+    document.fonts.load('400 45px Lora', `${title} ${name} ${greeting} ${invitationEnding} V`),
     guestName ? document.fonts.load(recipientFont, guestName) : [],
     document.fonts.load('400 16px "Be Vietnam Pro"', `${school} ${faculty} ${venueSchool} ${address}`),
     document.fonts.load('600 16px "Be Vietnam Pro"', `${date} ${time} ${venue} Thời gian Địa điểm Liên hệ`),
@@ -53,7 +52,7 @@ export async function exportInvitationPng(recipient: string): Promise<Blob> {
   ctx.font = guestName ? recipientFont : messageFont
   const greetingLines = wrapText(ctx, greeting, 520)
   ctx.font = messageFont
-  const messageLines = [...greetingLines, ...wrapText(ctx, ending, 456)]
+  const messageLines = [...greetingLines, ...wrapText(ctx, invitationEnding, 456)]
   const offset = (messageLines.length - 1) * 32
   const height = 666 + offset
   canvas.width = Math.round(width * scale)
@@ -152,20 +151,31 @@ export async function exportInvitationPng(recipient: string): Promise<Blob> {
   text(name, 278, '400 38px Lora', identity)
   text(faculty, 314, '400 15px "Be Vietnam Pro"', identity)
   rule(108, 385.5, width - 108, 385.5)
+
+  let greetingOffset = 0
   for (const [i, line] of messageLines.entries()) {
     const y = 415 + i * 32
-    if (guestName && i === 0) {
-      const firstNameLine = line.slice(invitationGreetingLead.length)
-      const lead = firstNameLine ? invitationGreetingLead : invitationGreetingLead.trimEnd()
-      ctx.font = messageFont
-      const leadWidth = ctx.measureText(lead).width
-      ctx.font = recipientFont
-      const left = center - (leadWidth + ctx.measureText(firstNameLine).width) / 2
-      text(lead.trimEnd(), y, messageFont, { x: left, align: 'left' })
-      if (firstNameLine) text(firstNameLine, y, recipientFont, { x: left + leadWidth, align: 'left', color: paperColors.wax })
-    } else {
-      const highlighted = guestName && i < greetingLines.length
-      text(line, y, highlighted ? recipientFont : messageFont, { color: highlighted ? paperColors.wax : paperColors.ink })
+    if (!guestName || i >= greetingLines.length) {
+      text(line, y, messageFont)
+      continue
+    }
+
+    const start = greeting.indexOf(line, greetingOffset)
+    greetingOffset = start + line.length
+    const nameStart = Math.max(0, invitationGreetingLead.length - start)
+    const nameEnd = Math.max(0, invitationGreetingLead.length + guestName.length - start)
+    const runs = [
+      { value: line.slice(0, nameStart), font: messageFont, color: paperColors.ink },
+      { value: line.slice(nameStart, nameEnd), font: recipientFont, color: paperColors.wax },
+      { value: line.slice(nameEnd), font: messageFont, color: paperColors.ink },
+    ].map((run) => {
+      ctx.font = run.font
+      return { ...run, width: ctx.measureText(run.value).width }
+    })
+    let x = center - runs.reduce((sum, run) => sum + run.width, 0) / 2
+    for (const run of runs) {
+      if (run.value.trim()) text(run.value, y, run.font, { x, align: 'left', color: run.color })
+      x += run.width
     }
   }
   rule(108, 444.5 + offset, width - 108, 444.5 + offset)

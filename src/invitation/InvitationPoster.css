@@ -141,7 +141,7 @@
   overflow-wrap: anywhere;
   text-wrap: pretty;
 }
-.invitation-greeting { display: block; }
+.invitation-greeting, .invitation-ending { display: block; }
 .invitation-recipient { color: var(--wax); font-weight: 600; }
 
 .ceremony-details { display: grid; gap: 0.7rem; margin: 1rem auto 0; line-height: 1.55; }
@@ -338,6 +338,10 @@ body:has(.poster-dialog[open]) { overflow: hidden; }
   .paper-border i:nth-child(3) { bottom: 6px; left: 6px; }
   .paper-border i:nth-child(4) { bottom: 6px; right: 6px; }
   .map-controls { justify-content: center; }
+}
+
+@media (max-width: 375px) {
+  .personal-invitation { font-size: clamp(0.9rem, 4.5vw, 1.04rem); }
 }
 
 @media (max-width: 355px) {

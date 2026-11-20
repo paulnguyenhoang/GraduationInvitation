@@ -1,6 +1,6 @@
 # GraduationInvitation
 
-Thư mời tốt nghiệp tương tác của Nguyễn Hoàng Vũ. Kéo hoặc vuốt để xoay phong bì. Chọn dấu sáp **V** hoặc nút chữ dưới phong bì để mở. Khi cảnh 3D đang tải, chọn **Mở thiệp** để vào ngay. Thêm tên người nhận nếu muốn cá nhân hóa thiệp và PNG. Chọn **Xong** hoặc nhấn Enter để lưu tên trên trình duyệt, hoặc nhấn Escape để hủy lần sửa. Nút **Lưu thiệp** xuất PNG của trang thư mời. Trong sơ đồ khuôn viên, dùng **Tập trung vào A5**, **Toàn cảnh** hoặc các nút thu phóng để điều hướng. Nút tải sơ đồ lưu PNG toàn cảnh có đánh dấu tòa A5. Nếu trình duyệt không thể tải trực tiếp, liên kết **Mở ảnh để lưu** xuất hiện cạnh nút tải.
+Thư mời tốt nghiệp tương tác của Nguyễn Hoàng Vũ. Kéo hoặc vuốt để xoay phong bì. Bấm hoặc chạm vào phong bì để mở, kể cả khi cảnh 3D đang tải. Có thể mở bằng bàn phím khi phong bì đang được chọn. Thêm tên người nhận nếu muốn cá nhân hóa thiệp và PNG. Chọn **Xong** hoặc nhấn Enter để lưu tên trên trình duyệt, hoặc nhấn Escape để hủy lần sửa. Nút **Lưu thiệp** xuất PNG của trang thư mời. Trong sơ đồ khuôn viên, dùng **Tập trung vào A5**, **Toàn cảnh** hoặc các nút thu phóng để điều hướng. Nút tải sơ đồ lưu PNG toàn cảnh có đánh dấu tòa A5. Nếu trình duyệt không thể tải trực tiếp, liên kết **Mở ảnh để lưu** xuất hiện cạnh nút tải.
 
 ## Chạy trên máy
 

@@ -11,6 +11,8 @@ const closedFlap = Math.PI + 0.025
 const restingYaw = -0.19
 const restingPitch = -0.11
 const touchThreshold = 7
+const floatAmplitude = 0.054
+const floatSpeed = 2.25
 
 export type EnvelopePhase = 'loading' | 'closed' | 'opening' | 'open'
 
@@ -30,6 +32,7 @@ type Gesture = {
   lastTime: number
   velocity: number
   dragged: boolean
+  startedOnEnvelope: boolean
 }
 
 function part(model: Object3D, name: string) {
@@ -135,9 +138,9 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
     if (reducedMotion.current) {
       floating.position.y = 0
     } else {
-      floatPhase.current += step * 1.6
+      floatPhase.current += step * floatSpeed
       floatWeight.current = MathUtils.damp(floatWeight.current, 1, 2.6, step)
-      floating.position.y = Math.sin(floatPhase.current) * 0.032 * floatWeight.current
+      floating.position.y = Math.sin(floatPhase.current) * floatAmplitude * floatWeight.current
     }
     const button = sealButtonRef.current
     if (button && document.activeElement === button) {
@@ -209,31 +212,33 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
         .to(floating.position, { y: -0.09, duration: 0.49 }, 0.49)
     }
 
-    function hitsSeal(event: PointerEvent) {
+    function envelopePartAt(event: PointerEvent) {
       const rect = canvas.getBoundingClientRect()
       pointer.set((event.clientX - rect.left) / rect.width * 2 - 1,
         1 - (event.clientY - rect.top) / rect.height * 2)
       ray.setFromCamera(pointer, get().camera)
-      return ray.intersectObjects(visibleParts, false)[0]?.object === seal
+      return ray.intersectObjects(visibleParts, false)[0]?.object
     }
 
     function onPointerDown(event: PointerEvent) {
       if (phase.current !== 'closed' || gesture || event.button !== 0 || !event.isPrimary) return
+      const hit = envelopePartAt(event)
       gesture = {
         id: event.pointerId, x: event.clientX, y: event.clientY,
         lastX: event.clientX, lastY: event.clientY, lastTime: event.timeStamp,
-        velocity: 0, dragged: false,
+        velocity: 0, dragged: false, startedOnEnvelope: Boolean(hit),
       }
       canvas.setPointerCapture(event.pointerId)
-      sealActive.current = hitsSeal(event)
+      sealActive.current = hit === seal
     }
 
     function onPointerMove(event: PointerEvent) {
       if (phase.current !== 'closed') return
       if (!gesture) {
         if (event.pointerType === 'mouse') {
-          sealActive.current = hitsSeal(event)
-          canvas.style.cursor = sealActive.current ? 'pointer' : 'grab'
+          const hit = envelopePartAt(event)
+          sealActive.current = hit === seal
+          canvas.style.cursor = hit ? 'pointer' : 'grab'
         }
         return
       }
@@ -263,10 +268,10 @@ function EnvelopeScene({ actionRef, sealButtonRef, onPhaseChange, onSceneError }
       if (moved && !reducedMotion.current && event.timeStamp - finished.lastTime < 100) {
         target.current.yaw += MathUtils.clamp(finished.velocity * 88, -0.57, 0.57)
       }
-      const overSeal = hitsSeal(event)
-      sealActive.current = event.pointerType === 'mouse' && !moved && overSeal
-      if (!moved && overSeal) openEnvelope()
-      else if (phase.current === 'closed') canvas.style.cursor = overSeal ? 'pointer' : 'grab'
+      const hit = envelopePartAt(event)
+      sealActive.current = event.pointerType === 'mouse' && !moved && hit === seal
+      if (!moved && finished.startedOnEnvelope && hit) openEnvelope()
+      else canvas.style.cursor = hit ? 'pointer' : 'grab'
       invalidate()
     }
 
