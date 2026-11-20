@@ -327,7 +327,6 @@
   align-items: center;
   min-height: 44px;
   padding: 0.2rem 0.45rem;
-  color: var(--ink);
 }
 
 .edit-name {
