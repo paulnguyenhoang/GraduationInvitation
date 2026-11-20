@@ -172,7 +172,7 @@ export function EnvelopeScreen({ recipient, onRecipientChange, onOpen, restoreOp
         <button ref={sealButtonRef} type="button" className="seal-key" aria-label="Mở thiệp từ phong bì"
           disabled={opening} onClick={open} />
         <span className="sr-only" role="status">
-          {phase === 'loading' && !failed ? 'Đang tải phong bì…' : phase === 'opening' ? 'Đang mở thư mời…' : ''}
+          {phase === 'loading' && !failed ? 'Đang tải phong bì…' : phase === 'opening' ? 'Đang mở thiệp mời…' : ''}
         </span>
       </section>
 

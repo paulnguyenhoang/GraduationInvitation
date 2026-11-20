@@ -1,7 +1,7 @@
 const imageBase = `${import.meta.env.BASE_URL}assets/images/`
 const locality = 'phường Diên Hồng, TP. Hồ Chí Minh'
 const dateIso = '2026-11-29'
-const titleLead = 'Thư mời'
+const titleLead = 'Thiệp mời'
 const titleEnd = 'tốt nghiệp'
 
 export const invitation = {
