@@ -26,7 +26,6 @@ export function InvitationPage({ recipient, onMapOpen, onParkingOpen, headingRef
           }} />
         </div>
         <div className="graduate-details">
-          <span className="identity-monogram" aria-hidden="true">V</span>
           <p className="graduate-name">{invitation.name}</p>
           <p className="faculty-name">{invitation.faculty}</p>
         </div>

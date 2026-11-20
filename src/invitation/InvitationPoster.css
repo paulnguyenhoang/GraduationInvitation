@@ -113,17 +113,7 @@
 }
 .paper-portrait img { position: absolute; display: block; height: auto; max-width: none; }
 
-.graduate-details { position: relative; isolation: isolate; min-width: 0; }
-.identity-monogram {
-  position: absolute;
-  z-index: -1;
-  top: -0.85em;
-  right: -0.42em;
-  color: #edf0e5;
-  text-shadow: -0.7px -0.7px #a8b9b5, 1px 1px #fffdf1;
-  font: 400 clamp(2.5rem, 8vw, 3.65rem)/1 Lora, Georgia, serif;
-  pointer-events: none;
-}
+.graduate-details { min-width: 0; }
 .graduate-name {
   margin: 0;
   font: 400 clamp(1.65rem, 6.9vw, 2.6rem)/1.14 Lora, Georgia, serif;
@@ -346,7 +336,6 @@ body:has(.poster-dialog[open]) { overflow: hidden; }
 
 @media (max-width: 355px) {
   .location-actions { display: grid; justify-content: stretch; width: min(12rem, 100%); margin-inline: auto; gap: 0.55rem; }
-  .identity-monogram { right: 0; top: -0.73em; }
 }
 
 @media (prefers-reduced-motion: reduce) {

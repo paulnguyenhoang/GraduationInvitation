@@ -140,14 +140,6 @@ export async function exportInvitationPng(recipient: string): Promise<Blob> {
   ctx.restore()
 
   const identity = { x: 335, align: 'left' } as const
-  ctx.textAlign = 'center'
-  ctx.font = '400 56px Lora'
-  ctx.fillStyle = paperColors.embossShadow
-  ctx.fillText('V', 654, 243)
-  ctx.fillStyle = paperColors.embossHighlight
-  ctx.fillText('V', 655.3, 244.3)
-  ctx.fillStyle = '#edf0e5'
-  ctx.fillText('V', 654.7, 243.7)
   text(name, 278, '400 38px Lora', identity)
   text(faculty, 314, '400 15px "Be Vietnam Pro"', identity)
   rule(108, 385.5, width - 108, 385.5)

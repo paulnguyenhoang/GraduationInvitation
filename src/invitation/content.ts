@@ -34,8 +34,6 @@ export const paperColors = {
   sand: '#9aafb4',
   darkAccent: '#3b596b',
   wax: '#873e36',
-  embossShadow: '#a8b9b5',
-  embossHighlight: '#fffdf1',
 }
 
 export const portraitCrop = { width: 2.12, left: -0.3, top: -0.62 }
