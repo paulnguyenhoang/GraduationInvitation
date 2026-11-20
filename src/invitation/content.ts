@@ -14,7 +14,7 @@ export const invitation = {
   date: 'Chủ nhật, ngày 29/11/2026',
   dateIso,
   dateStamp: dateIso.split('-').reverse().join('.'),
-  time: '10:30 – 12:00',
+  time: '10:15 – 12:00',
   venue: 'Tòa A5',
   venueSchool: 'Trường Đại học Bách khoa – Cơ sở 1',
   address: `268 Lý Thường Kiệt, ${locality}`,
